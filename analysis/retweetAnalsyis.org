@@ -185,6 +185,35 @@
       plt.ylabel(yLabel)
       plt.show()
 
+
+  def make_chart_several_line_charts(plt):
+
+      xs = range(24)
+      lineColors = ['r','g','b','c','m-','k']
+      nextLineColor = 0
+
+      for activity in allActivity:
+          category = activity[0]
+
+          if category == "activity":
+	      continue
+
+          total = sum(activity[1:])
+
+	  if total > 0:
+	      plt.plot(xs, activity[1:],  lineColors[nextLineColor % len(lineColors)] ,  label=category)    # green solid line	  
+	      nextLineColor += 1
+
+      # because we've assigned labels to each series
+      # we can get a legend for free
+      # loc=9 means "top center"
+      # loc=0 means "best"
+      plt.legend(loc=0)
+      plt.xlabel("category")
+      plt.title("total")
+      plt.show()
+
+
   def make_chart_simple_bar_chart(plt):
 
       categories = []
@@ -214,6 +243,7 @@
 
 
   if __name__ == "__main__":
+      make_chart_several_line_charts(plt)
       make_chart_simple_bar_chart(plt)
       make_chart_simple_line_chart(plt)
  #+end_src
