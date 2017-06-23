@@ -1,15 +1,11 @@
-* What
-  Analyzing first day activity of one of my recent tweets:   https://twitter.com/eludom/status/877864759126839296
-* Why
-  Playing with Python potting libraries
-* Who  
-  George Jones @eludom
-* When
-  <2017-06-23>
-
-* Where
-  Python
-* How  
+* Introduction
+  - What :: Analyzing first day activity of one of my recent tweets:   https://twitter.com/eludom/status/877864759126839296
+  - Why ::  Playing with Python potting libraries
+  - Who ::  George Jones @eludom
+  - When :: <2017-06-23>
+  - Where :: PythonSpace
+* How
+ 
 ** Get the data
    - The data was extracted from email notifications in my inbox from twitter
    
@@ -61,7 +57,7 @@
    | 08:25 | @TyrannosaurJen | following |
    | 05:25 | @eludom         | posted    |
 
-** Bin data by hour
+** Bin Raw data by hour
    - Bin the data by hour
  #+name: binnedData  
  #+begin_src python :var rawData=RawData :results value :cache no :export code
@@ -118,9 +114,7 @@
    | 05 | @eludom         | posted    |
 
 
-
-** Activity By Hour
-
+** Generate activity by hour
    List all activity by hour.  Create vectors for each prefixed by the
    activity name with an entry for each hour.
 
@@ -169,33 +163,60 @@
    | retweeted | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 5 | 3 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
    | following | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
 
-   
+** Do a line plot of total activity by hour
+   Some code borrowed from https://github.com/joelgrus/data-science-from-scratch
+#+begin_src python :var allActivity=activityByHour :results value 
+  import matplotlib.pyplot as plt
+  from collections import Counter
 
-** Do a line plot of the activity
- #+begin_src python :var allActivity=activityByHour :results value 
-   import matplotlib.pyplot as plt
-   from collections import Counter
+  def make_chart_simple_line_chart(plt):
 
-   def make_chart_simple_line_chart(plt):
+      hours = range(24)
+      activity = allActivity[0]
+      yLabel = activity.pop(0)
 
-       hours = range(24)
-       activity = allActivity[0]
-       yLabel = activity.pop(0)
+      # create a line chart, hours on x-axis, activity on y-axis
+      plt.plot(hours, activity, color='green', marker='o', linestyle='solid')
 
-       # create a line chart, hours on x-axis, activity on y-axis
-       plt.plot(hours, activity, color='green', marker='o', linestyle='solid')
+      # add a title
+      plt.title("Activity By Hour")
 
-       # add a title
-       plt.title("Activity By Hour")
+      # add a label to the y-axis
+      plt.ylabel(yLabel)
+      plt.show()
 
-       # add a label to the y-axis
-       plt.ylabel(yLabel)
-       plt.show()
+  def make_chart_simple_bar_chart(plt):
+
+      categories = []
+      totals = []
+
+      for activity in allActivity:
+          category = activity[0]
+          total = sum(activity[1:])
+
+	  if total > 0:
+	      categories.append(category)
+	      totals.append(total)
+
+      # bars are by default width 0.8, so we'll add 0.1 to the left coordinates
+      # so that each bar is centered
+      xs = [i + 0.1 for i, _ in enumerate(categories)]
+
+      # plot bars with left x-coordinates [xs], heights [totals]
+      plt.bar(xs, totals)
+      plt.ylabel("Count of Activity")
+      plt.title("Twitter Activity")
+
+      # label x-axis with movie names at bar centers
+      plt.xticks([i + 0.5 for i, _ in enumerate(categories)], categories)
+
+      plt.show()
 
 
-
-   if __name__ == "__main__":
-       make_chart_simple_line_chart(plt)
+  if __name__ == "__main__":
+      make_chart_simple_bar_chart(plt)
+      make_chart_simple_line_chart(plt)
  #+end_src
 
  #+RESULTS:
+ : None
