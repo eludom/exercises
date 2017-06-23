@@ -1,0 +1,201 @@
+* What
+  Analyzing first day activity of one of my recent tweets:   https://twitter.com/eludom/status/877864759126839296
+* Why
+  Playing with Python potting libraries
+* Who  
+  George Jones @eludom
+* When
+  <2017-06-23>
+
+* Where
+  Python
+* How  
+** Get the data
+   - The data was extracted from email notifications in my inbox from twitter
+   
+** Clean the data
+
+   The cleaned data is here:
+
+   #+NAME: RawData
+   |  when | handle          | action    |
+   |-------+-----------------+-----------|
+   | 23:13 | @RealPython     | liked     |
+   | 21:28 | @rfutrick       | liked     |
+   | 20:55 | @jeffgreenberg  | liked     |
+   | 18:12 | @codescribler   | following |
+   | 17:16 | @ConFigures     | liked     |
+   | 14:42 | @scienceRtBot   | retweeted |
+   | 14:42 | @splum6         | retweeted |
+   | 14:37 | @paula_thrasher | retweeted |
+   | 13:56 | @jongiddy       | liked     |
+   | 13:14 | @thisisaleksey  | liked     |
+   | 13:14 | @carlossil01    | liked     |
+   | 12:54 | @dacadoo        | following |
+   | 12:48 | @nigewillson    | following |
+   | 12:47 | @gussand        | liked     |
+   | 12:40 | @scott_lowe     | retweeted |
+   | 12:30 | @m              | liked     |
+   | 12:29 | @JanStette      | liked     |
+   | 12:26 | @russwyte       | liked     |
+   | 11:48 | @Mr4x3          | retweeted |
+   | 11:47 | @jon_than_      | retweeted |
+   | 11:18 | @rams           | liked     |
+   | 11:18 | @joancarbonell  | following |
+   | 11:16 | @DonaldOJDK     | liked     |
+   | 11:16 | @DonaldOJDK     | retweeted |
+   | 10:58 | @GinoBaltazar   | following |
+   | 10:55 | @koehntopp      | retweeted |
+   | 10:54 | @RealGeneKim    | retweeted |
+   | 10:54 | @daniel_bilar   | replied   |
+   | 10:53 | @w1bble         | liked     |
+   | 10:43 | @markmadsen     | retweeted |
+   | 10:38 | @adrianco       | retweeted |
+   | 10:05 | @rBharshetty    | retweeted |
+   | 09:54 | @BeFerrier      | following |
+   | 09:53 | @vyodaiken      | retweeted |
+   | 09:04 | @mavant         | liked     |
+   | 08:31 | @adriancolyer   | liked     |
+   | 08:31 | @adriancolyer   | retweeted |
+   | 08:28 | @stashglobal    | following |
+   | 08:25 | @TyrannosaurJen | following |
+   | 05:25 | @eludom         | posted    |
+
+** Bin data by hour
+   - Bin the data by hour
+ #+name: binnedData  
+ #+begin_src python :var rawData=RawData :results value :cache no :export code
+
+   byHour=[]
+
+   for entry in rawData:
+    byHour.append([entry[0].split(":")[0],entry[1],entry[2]])
+
+   return byHour
+
+   #+end_src
+
+   #+RESULTS: binnedData
+   | 23 | @RealPython     | liked     |
+   | 21 | @rfutrick       | liked     |
+   | 20 | @jeffgreenberg  | liked     |
+   | 18 | @codescribler   | following |
+   | 17 | @ConFigures     | liked     |
+   | 14 | @scienceRtBot   | retweeted |
+   | 14 | @splum6         | retweeted |
+   | 14 | @paula_thrasher | retweeted |
+   | 13 | @jongiddy       | liked     |
+   | 13 | @thisisaleksey  | liked     |
+   | 13 | @carlossil01    | liked     |
+   | 12 | @dacadoo        | following |
+   | 12 | @nigewillson    | following |
+   | 12 | @gussand        | liked     |
+   | 12 | @scott_lowe     | retweeted |
+   | 12 | @m              | liked     |
+   | 12 | @JanStette      | liked     |
+   | 12 | @russwyte       | liked     |
+   | 11 | @Mr4x3          | retweeted |
+   | 11 | @jon_than_      | retweeted |
+   | 11 | @rams           | liked     |
+   | 11 | @joancarbonell  | following |
+   | 11 | @DonaldOJDK     | liked     |
+   | 11 | @DonaldOJDK     | retweeted |
+   | 10 | @GinoBaltazar   | following |
+   | 10 | @koehntopp      | retweeted |
+   | 10 | @RealGeneKim    | retweeted |
+   | 10 | @daniel_bilar   | replied   |
+   | 10 | @w1bble         | liked     |
+   | 10 | @markmadsen     | retweeted |
+   | 10 | @adrianco       | retweeted |
+   | 10 | @rBharshetty    | retweeted |
+   | 09 | @BeFerrier      | following |
+   | 09 | @vyodaiken      | retweeted |
+   | 09 | @mavant         | liked     |
+   | 08 | @adriancolyer   | liked     |
+   | 08 | @adriancolyer   | retweeted |
+   | 08 | @stashglobal    | following |
+   | 08 | @TyrannosaurJen | following |
+   | 05 | @eludom         | posted    |
+
+
+
+** Activity By Hour
+
+   List all activity by hour.  Create vectors for each prefixed by the
+   activity name with an entry for each hour.
+
+ #+name: activityByHour
+ #+begin_src python :var binned=binnedData :results value :cache no :export code
+   """
+   Create x/y vector of time/activity
+   """
+
+   activity = ["activity"]
+   posted = ["posted"]
+   liked = ["liked"]
+   retweeted = ["retweeted"]
+   following = ["following"]
+
+   for i in range(24):
+     activity.append(0)
+     posted.append(0)
+     liked.append(0)
+     retweeted.append(0)
+     following.append(0)
+
+   for entry in binned:
+        activity[int(entry[0])] += 1
+
+        if entry[2] == "posted":
+      	  posted[int(entry[0])] += 1
+        elif entry[2] == "liked":
+      	  liked[int(entry[0])] += 1
+        elif entry[2] == "retweeted":
+      	  retweeted[int(entry[0])] += 1
+        elif entry[2] == "following":
+      	  following[int(entry[0])] += 1
+        elif entry[2] == "liked":
+      	  liked[int(entry[0])] += 1
+		 
+
+   return [activity,posted,liked,retweeted,following]
+
+   #+end_src
+
+   #+RESULTS: activityByHour
+   | activity  | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 4 | 3 | 8 | 6 | 7 | 3 | 3 | 0 | 0 | 1 | 1 | 0 | 1 | 1 | 0 | 1 | 0 |
+   | posted    | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+   | liked     | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 2 | 4 | 3 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 1 | 0 | 1 | 0 |
+   | retweeted | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 5 | 3 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+   | following | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+   
+
+** Do a line plot of the activity
+ #+begin_src python :var allActivity=activityByHour :results value 
+   import matplotlib.pyplot as plt
+   from collections import Counter
+
+   def make_chart_simple_line_chart(plt):
+
+       hours = range(24)
+       activity = allActivity[0]
+       yLabel = activity.pop(0)
+
+       # create a line chart, hours on x-axis, activity on y-axis
+       plt.plot(hours, activity, color='green', marker='o', linestyle='solid')
+
+       # add a title
+       plt.title("Activity By Hour")
+
+       # add a label to the y-axis
+       plt.ylabel(yLabel)
+       plt.show()
+
+
+
+   if __name__ == "__main__":
+       make_chart_simple_line_chart(plt)
+ #+end_src
+
+ #+RESULTS:
